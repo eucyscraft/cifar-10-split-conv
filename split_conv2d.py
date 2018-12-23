@@ -4,6 +4,7 @@
 from keras.datasets import cifar10
 from keras.layers import Conv2D, Lambda, Input, Flatten, Dense, concatenate
 from keras.models import Model, Sequential
+from keras.utils import to_categorical
 import numpy as np
 
 def create_split_conv2d(x_size: int, y_size: int, channels_in: int, channels_out_per_channel_in: int, **other_conv2d_params) -> Model:
@@ -27,11 +28,9 @@ def create_split_conv2d(x_size: int, y_size: int, channels_in: int, channels_out
 
 # Load CIFAR-10 for testing purposes
 (train_images, train_labels), (test_images, test_labels) = cifar10.load_data()
-# Reshape the image tensors into proper 4D arrays
-train_images = np.reshape(train_images, (-1, 3, 32, 32))
-train_images = np.transpose(train_images, (0, 2, 3, 1))
-test_images = np.reshape(test_images, (-1, 3, 32, 32))
-test_images = np.transpose(test_images, (0, 2, 3, 1))
+# One-hot encode the labels
+train_labels = to_categorical(train_labels)
+test_labels = to_categorical(test_labels)
 
 # Create a network with these split convolutional layers
 activation = 'relu'
