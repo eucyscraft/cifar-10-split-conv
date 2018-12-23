@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """A CNN module to split channels up individually and convolve them with weight sharing across channels (with different sets of output channels)"""
 
-from cifar10_web import cifar10
+from keras.datasets import cifar10
 from keras.layers import Conv2D, Lambda, Input, Flatten, Dense, concatenate
 from keras.models import Model, Sequential
 import numpy as np
@@ -26,7 +26,7 @@ def create_split_conv2d(x_size: int, y_size: int, channels_in: int, channels_out
     return model
 
 # Load CIFAR-10 for testing purposes
-train_images, train_labels, test_images, test_labels = cifar10()
+(train_images, train_labels), (test_images, test_labels) = cifar10.load_data()
 # Reshape the image tensors into proper 4D arrays
 train_images = np.reshape(train_images, (-1, 3, 32, 32))
 train_images = np.transpose(train_images, (0, 2, 3, 1))
