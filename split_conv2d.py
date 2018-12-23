@@ -2,7 +2,7 @@
 """A CNN module to split channels up individually and convolve them with weight sharing across channels (with different sets of output channels)"""
 
 from keras.datasets import cifar10
-from keras.layers import Conv2D, Lambda, Input, Flatten, Dense, concatenate
+from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D, Lambda, Input, Flatten, Dense, concatenate
 from keras.models import Model, Sequential
 from keras.utils import to_categorical
 import numpy as np
@@ -22,9 +22,7 @@ def create_split_conv2d(x_size: int, y_size: int, channels_in: int, channels_out
     # Concatenate them back together at the end, with shape (examples, x_size, y_size, channels_in * channels_out_per_channel_in)
     outputs = concatenate(conv_outputs)
     # Return a model with these inputs and outputs
-    model = Model(inputs=inputs, outputs=outputs)
-    print(model.summary())
-    return model
+    return Model(inputs=inputs, outputs=outputs)
 
 # Load CIFAR-10 for testing purposes
 (train_images, train_labels), (test_images, test_labels) = cifar10.load_data()
@@ -35,14 +33,16 @@ test_labels = to_categorical(test_labels)
 # Create a network with these split convolutional layers
 activation = 'relu'
 model = Sequential([
-    create_split_conv2d(x_size=32, y_size=32, channels_in=3, channels_out_per_channel_in=8, kernel_size=4, activation=activation),
-    create_split_conv2d(x_size=29, y_size=29, channels_in=24, channels_out_per_channel_in=8, kernel_size=4, activation=activation),
-    Conv2D(kernel_size=1, filters=16, activation=activation),
-    create_split_conv2d(x_size=26, y_size=26, channels_in=16, channels_out_per_channel_in=4, kernel_size=4, activation=activation),
-    create_split_conv2d(x_size=23, y_size=23, channels_in=64, channels_out_per_channel_in=4, kernel_size=4, activation=activation),
-    Conv2D(kernel_size=1, filters=16, activation=activation),
-    Flatten(),
-    Dense(10, activation='sigmoid')
+    create_split_conv2d(x_size=32, y_size=32, channels_in=3, channels_out_per_channel_in=64, kernel_size=5, activation=activation),
+    Conv2D(kernel_size=1, filters=96, activation=activation),
+    MaxPooling2D(pool_size=3, strides=2),
+    create_split_conv2d(x_size=13, y_size=13, channels_in=96, channels_out_per_channel_in=128, kernel_size=5, activation=activation),
+    Conv2D(kernel_size=1, filters=192, activation=activation),
+    MaxPooling2D(pool_size=3, strides=2),
+    Conv2D(kernel_size=3, filters=192, activation=activation),
+    Conv2D(kernel_size=1, filters=192, activation=activation),
+    Conv2D(kernel_size=1, filters=10, activation=activation),
+    GlobalAveragePooling2D()
 ])
 print(model.summary())
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
