@@ -36,7 +36,7 @@ model = Sequential([
     create_split_conv2d(x_size=32, y_size=32, channels_in=3, channels_out_per_channel_in=64, kernel_size=5, activation=activation),
     Conv2D(kernel_size=1, filters=96, activation=activation),
     MaxPooling2D(pool_size=3, strides=2),
-    create_split_conv2d(x_size=13, y_size=13, channels_in=96, channels_out_per_channel_in=128, kernel_size=5, activation=activation),
+    create_split_conv2d(x_size=13, y_size=13, channels_in=96, channels_out_per_channel_in=2, kernel_size=5, activation=activation),
     Conv2D(kernel_size=1, filters=192, activation=activation),
     MaxPooling2D(pool_size=3, strides=2),
     Conv2D(kernel_size=3, filters=192, activation=activation),
