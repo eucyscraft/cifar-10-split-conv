@@ -34,12 +34,15 @@ test_images = np.reshape(test_images, (-1, 3, 32, 32))
 test_images = np.transpose(test_images, (0, 2, 3, 1))
 
 # Create a network with these split convolutional layers
+activation = 'relu'
 model = Sequential([
-    create_split_conv2d(x_size=32, y_size=32, channels_in=3, channels_out_per_channel_in=8, kernel_size=4, activation='tanh'),
-    create_split_conv2d(x_size=29, y_size=29, channels_in=24, channels_out_per_channel_in=8, kernel_size=4, activation='tanh'),
-    Conv2D(kernel_size=1, filters=16, activation='tanh'),
+    create_split_conv2d(x_size=32, y_size=32, channels_in=3, channels_out_per_channel_in=8, kernel_size=4, activation=activation),
+    create_split_conv2d(x_size=29, y_size=29, channels_in=24, channels_out_per_channel_in=8, kernel_size=4, activation=activation),
+    Conv2D(kernel_size=1, filters=16, activation=activation),
+    create_split_conv2d(x_size=26, y_size=26, channels_in=16, channels_out_per_channel_in=4, kernel_size=4, activation=activation),
+    create_split_conv2d(x_size=23, y_size=23, channels_in=64, channels_out_per_channel_in=4, kernel_size=4, activation=activation),
+    Conv2D(kernel_size=1, filters=16, activation=activation),
     Flatten(),
-    Dense(100, activation='tanh'),
     Dense(10, activation='sigmoid')
 ])
 print(model.summary())
